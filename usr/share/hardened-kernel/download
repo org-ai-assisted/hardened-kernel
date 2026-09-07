@@ -53,11 +53,6 @@ linux_hardened_patch_archive="https://github.com/anthraxx/linux-hardened/release
 ## https://www.hardenize.com/report/kernel.org/1603725038#www_tls
 curl_opts="--tlsv1.2 --proto =https --location --remote-name"
 
-## Every 'curl ${curl_opts}' below is DELIBERATELY UNQUOTED: curl_opts holds
-## FIVE separate options and quoting collapses them into one argument that curl
-## rejects, breaking the kernel-source download outright. Three of the five are
-## TLS/protocol restrictions, so this is not a cosmetic split.
-
 curl ${curl_opts} "${kernel_sha256sums_file}" -o "./sha256sums.asc"
 curl ${curl_opts} "${kernel_source_signature}" -o "./linux-${version}.tar.sign"
 curl ${curl_opts} "${kernel_source_archive}" -o "./linux-${version}.tar.xz"

@@ -12,18 +12,12 @@ set -o errtrace
 shopt -s inherit_errexit
 shopt -s shift_verbose
 
-## Assigned only when the matching option is given. kernel_config in particular
-## is read by the guard below whose whole job is to say "you need to add either
-## --vm or --host" -- under nounset the unset read aborted before that message
-## could print, replacing it with a bash error.
 debug=""
 kernel_config=""
 continue_debug=""
 
 while :
 do
-   ## The loop runs until the arguments are exhausted, so its last
-   ## iteration reads an unset $1 by design.
    case "${1:-}" in
    --debug)
       debug="true"
@@ -71,9 +65,6 @@ MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 ## Debugging.
 whoami
 env
-## CI is set only by the CI runner, and this is a no-op 'true' string --
-## but it is still a parameter expansion, so under nounset it aborted every
-## LOCAL build. Line 107 below already defaults it.
 true "CI: ${CI:-}"
 
 ## TODO: do not use networking as per https://forums.whonix.org/t/kernel-recompilation-for-better-hardening/7598/214
@@ -110,8 +101,7 @@ tar -xf "${source_folder}/linux-${version}.tar.xz" -C "${working_folder}"
 ## Debugging.
 ls "${extracted_linux_kernel_sources_folder}"
 
-## The cat keeps the data flow reading left to right, patch file first.
-## Rewriting a kernel-patch invocation is not this pass's business.
+## Maybe avoid cat here later.
 # shellcheck disable=SC2002
 cat "${source_folder}/linux-hardened-${version}.a.patch" | patch --silent -p1 -d "${extracted_linux_kernel_sources_folder}"
 
